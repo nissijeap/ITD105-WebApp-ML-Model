@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubers / Visualize</title>
+
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+      <!-- Include necessary libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+{% extends 'charts.html' %}
+
+{% block body %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Uber Data Visualization</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}">Home</a></li>
+              <li class="breadcrumb-item active"><a href="{{ url_for('ubers')}}">Ubers</a></li>
+              <li class="breadcrumb-item active">Visualize</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6">
+            <!-- AREA CHART -->
+            <div class="card card-info">
+                <div class="card-header">
+                    <h3 class="card-title" style="color: white; font-weight: bold">Area Chart | Distance over Fare Amount</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart">
+                        <canvas id="areaChart" style="height: 500px; width: 100%;"></canvas>
+                    </div>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <!-- DONUT CHART -->
+            <div class="card card-danger">
+              <div class="card-header">
+                <h3 class="card-title" style="color: white; font-weight: bold">Donut Chart  | Passenger Count over Fare Amount</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <canvas id="donutChart" style="height: 500px; width: 100%;"></canvas>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+               <!-- Bar Chart -->
+          <div class="card card-warning">
+              <div class="card-header">
+                  <h3 class="card-title" style="color: white; font-weight: bold">Bar Chart  | Passenger Count over Fare Amount</h3>
+
+                  <div class="card-tools">
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                          <i class="fas fa-minus"></i>
+                      </button>
+                      <button type="button" class="btn btn-tool" data-card-widget="remove">
+                          <i class="fas fa-times"></i>
+                      </button>
+                  </div>
+              </div>
+              <div class="card-body">
+                  <div class="chart">
+                      <canvas id="barChart" style="height: 500px; width: 100%;"></canvas>
+                  </div>
+              </div>
+              <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+
+<!--              &lt;!&ndash; BAR CHART &ndash;&gt;-->
+<!--            <div class="card card-success">-->
+<!--              <div class="card-header">-->
+<!--                <h3 class="card-title" style="color: white; font-weight: bold">Radar Chart | Event Total Count Harvest</h3>-->
+
+<!--                <div class="card-tools">-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+<!--                    <i class="fas fa-minus"></i>-->
+<!--                  </button>-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="remove">-->
+<!--                    <i class="fas fa-times"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="card-body">-->
+<!--                <div class="chart">-->
+<!--                  <canvas id="radar1Chart" style="height: 500px; width: 100%;"></canvas>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              &lt;!&ndash; /.card-body &ndash;&gt;-->
+<!--            </div>-->
+<!--            &lt;!&ndash; /.card &ndash;&gt;-->
+
+
+          </div>
+          <!-- /.col (LEFT) -->
+          <div class="col-md-6">
+            <!-- LINE CHART -->
+            <div class="card card-warning">
+              <div class="card-header">
+                <h3 class="card-title" style="color: white; font-weight: bold">Line Chart  | Passenger Count over Distance</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="chart">
+                  <canvas id="lineChart" style="height: 500px; width: 100%;"></canvas>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+              <!-- PIE CHART -->
+            <div class="card card-success">
+                <div class="card-header">
+                    <h3 class="card-title" style="color: white; font-weight: bold">Pie Chart  | Passenger Count over Fare Amount</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-tool" data-card-widget="remove">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="pieChart" style="height: 500px; width: 100%;"></canvas>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+                         <!-- PIE CHART -->
+            <div class="card card-info">
+              <div class="card-header">
+                <h3 class="card-title"  style="color: white; font-weight: bold">Scatter Plot Chart | Passenger Count over Distance & Fare Amount</h3>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                  <button type="button" class="btn btn-tool" data-card-widget="remove">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <canvas id="scatterChart" style="height: 500px; width: 100%;"></canvas>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+<!--            &lt;!&ndash; BAR CHART &ndash;&gt;-->
+<!--            <div class="card card-danger">-->
+<!--              <div class="card-header">-->
+<!--                <h3 class="card-title" style="color: white; font-weight: bold">Radar Chart | Event Total Count Alive</h3>-->
+
+<!--                <div class="card-tools">-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="collapse">-->
+<!--                    <i class="fas fa-minus"></i>-->
+<!--                  </button>-->
+<!--                  <button type="button" class="btn btn-tool" data-card-widget="remove">-->
+<!--                    <i class="fas fa-times"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="card-body">-->
+<!--                <div class="chart">-->
+<!--                  <canvas id="radar2Chart" style="height: 500px; width: 100%;"></canvas>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              &lt;!&ndash; /.card-body &ndash;&gt;-->
+<!--            </div>-->
+<!--            &lt;!&ndash; /.card &ndash;&gt;-->
+
+
+          </div>
+          <!-- /.col (RIGHT) -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- jQuery -->
+    <script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+    <!-- Bootstrap 4 -->
+    <script src="{{ url_for('static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <!-- ChartJS -->
+    <script src=".{{ url_for('static', filename='plugins/chart.js/Chart.min.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='dist/js/adminlte.min.js') }}"></script>
+
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Your existing Chart.js code -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Load your data from the server here and format it as needed for the charts -->
+<script>
+    $(document).ready(function () {
+        // Function to format Python data for the charts
+        function formatDataForChart(chartType, chartData) {
+            // Implement logic to format the data based on your requirements
+            // For simplicity, assuming the data structure is suitable for the charts
+
+            // Function to generate a random color
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            // Generate random colors for each data point
+            var randomColors = chartData.datasets[0].data.map(function () {
+                return getRandomColor();
+            });
+
+            return {
+                labels: chartData.labels,
+                datasets: [{
+                    label: chartData.datasets[0].label,
+                    data: chartData.datasets[0].data,
+                    backgroundColor: randomColors, // Random opacity color for bars
+                    borderColor: randomColors, // Random opacity color for border
+                    borderWidth: chartData.datasets[0].borderWidth,
+                }]
+            };
+        }
+
+        // Bar Chart
+        var barChartConfig = {
+            type: 'bar',
+            data: formatDataForChart('bar', {{ bar_chart_data | tojson | safe }}),
+            options: {
+                scales: {
+                    x: {
+                        type: 'category',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Species',
+                            color: 'white' // Set label color to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)' // Set grid color to white with opacity
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Adult Count',
+                            color: 'white' // Set label color to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)' // Set grid color to white with opacity
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                },
+                // Add title for Bar Chart
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Bar Chart',
+                        color: 'white'
+                    }
+                }
+            }
+        };
+
+        var barChartCanvas = document.getElementById('barChart').getContext('2d');
+        new Chart(barChartCanvas, barChartConfig);
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Function to format Python data for the charts
+        function formatDataForChart(chartType, chartData) {
+            // Implement logic to format the data based on your requirements
+            // For simplicity, assuming the data structure is suitable for the charts
+
+            // Function to generate a random color
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            // Generate random colors for each data point
+            var randomColors = chartData.datasets[0].data.map(function () {
+                return getRandomColor();
+            });
+
+            return {
+                labels: chartData.labels,
+                datasets: [{
+                    label: chartData.datasets[0].label,
+                    data: chartData.datasets[0].data,
+                    backgroundColor: randomColors, // Random opacity color for area
+                    borderColor: randomColors, // Random opacity color for border
+                    borderWidth: chartData.datasets[0].borderWidth,
+                    fill: true, // To fill the area under the line
+                    tension: 0.1 // Set tension for a smooth curve
+                }]
+            };
+        }
+
+        // Area Chart
+        var areaChartConfig = {
+            type: 'line',
+            data: formatDataForChart('line', {{ area_chart_data | tojson | safe }}),
+            options: {
+                scales: {
+                    x: {
+                        type: 'category',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Species',
+                            color: 'white' // Set label color to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)' // Set grid color to white with opacity
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Total Harvest Count',
+                            color: 'white' // Set label color to white
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)' // Set grid color to white with opacity
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: 'white'
+                        }
+                    },
+                    // Add title for Area Chart
+                    title: {
+                        display: true,
+                        text: 'Area Chart',
+                        color: 'white'
+                    }
+                }
+            }
+        };
+
+        var areaChartCanvas = document.getElementById('areaChart').getContext('2d');
+        new Chart(areaChartCanvas, areaChartConfig);
+    });
+</script>
+
+<!-- Load your data from the server here and format it as needed for the charts -->
+<script>
+    $(document).ready(function () {
+        // Function to format Python data for the charts
+        function formatDataForChart(chartType, chartData) {
+            // Implement logic to format the data based on your requirements
+            // For simplicity, assuming the data structure is suitable for the charts
+            return {
+                labels: chartData.labels,
+                datasets: [{
+                    label: chartData.datasets[0].label,
+                    data: chartData.datasets[0].data,
+                    borderColor: chartData.datasets[0].borderColor,
+                    borderWidth: chartData.datasets[0].borderWidth,
+                    fill: chartData.datasets[0].fill,
+                    tension: chartData.datasets[0].tension,
+                    pointRadius: chartData.datasets[0].pointRadius,
+                    pointHoverRadius: chartData.datasets[0].pointHoverRadius
+                }]
+            };
+        }
+
+        // Line Chart
+        var lineChartConfig = {
+            type: 'line',
+            data: formatDataForChart('line', {{ line_chart_data | tojson | safe }}),
+            options: {
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Passenger Count'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Distance'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: 'black'
+                        }
+                    }
+                }
+            }
+        };
+
+        var lineChartCanvas = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineChartCanvas, lineChartConfig);
+    });
+</script>
+
+
+<!-- Load your data from the server here and format it as needed for the charts -->
+<script>
+    $(document).ready(function () {
+        // Function to format Python data for the charts
+        function formatDataForChart(chartType, chartData) {
+            // Implement logic to format the data based on your requirements
+            // For simplicity, assuming the data structure is suitable for the charts
+            return {
+                labels: chartData.labels,
+                datasets: [{
+                    label: chartData.datasets[0].label,
+                    data: chartData.datasets[0].data,
+                    backgroundColor: chartData.datasets[0].data.map(function () {
+                        return getRandomColor();
+                    }),
+                }]
+            };
+        }
+
+        // Existing chart configurations and scripts
+
+        // Pie Chart
+        var pieChartConfig = {
+            type: 'pie',
+            data: formatDataForChart('pie', {{ pie_chart_data | tojson | safe }}),
+            options: {
+                // Customize options as needed
+                // Add title for Pie Chart
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Pie Chart',
+                        color: 'white'
+                    }
+                }
+            }
+        };
+
+        var pieChartCanvas = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieChartCanvas, pieChartConfig);
+
+        // Function to generate a random color
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Function to format Python data for the charts
+        function formatDataForChart(chartType, chartData) {
+            // Implement logic to format the data based on your requirements
+            // For simplicity, assuming the data structure is suitable for the charts
+            return {
+                labels: chartData.labels,
+                datasets: [{
+                    label: chartData.datasets[0].label,
+                    data: chartData.datasets[0].data,
+                    backgroundColor: chartData.datasets[0].backgroundColor,
+                    borderColor: chartData.datasets[0].borderColor,
+                    borderWidth: chartData.datasets[0].borderWidth,
+                }]
+            };
+        }
+
+        // Function to generate a random color with full opacity
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color + 'FF'; // 'FF' for full opacity
+        }
+
+        // Modify the data to use random colors with full opacity
+        var donutChartData = {{ donut_chart_data | tojson | safe }};
+        donutChartData.datasets[0].backgroundColor = donutChartData.labels.map(function () {
+            return getRandomColor();
+        });
+
+        // Donut Chart
+        var donutChartConfig = {
+            type: 'doughnut',
+            data: formatDataForChart('doughnut', donutChartData),
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: 'white'
+                        }
+                    }
+                },
+                // Add title for Donut Chart
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Donut Chart',
+                        color: 'white'
+                    }
+                }
+            }
+        };
+
+        var donutChartCanvas = document.getElementById('donutChart').getContext('2d');
+        new Chart(donutChartCanvas, donutChartConfig);
+    });
+</script>
+
+<!-- Add this script in your HTML file after loading Chart.js library -->
+
+<script>
+        // Function to format Python data for the charts
+        function formatDataForChart(chartData) {
+            return {
+                labels: chartData.labels,
+                datasets: chartData.datasets.map(dataset => ({
+                    label: dataset.label,
+                    data: dataset.data,
+                    backgroundColor: dataset.backgroundColor,
+                    borderColor: dataset.borderColor,
+                    borderWidth: dataset.borderWidth,
+                    pointRadius: 6,  // Adjust the point radius as needed
+                    pointHoverRadius: 8  // Adjust the hover radius as needed
+                }))
+            };
+        }
+
+        // Scatter Chart
+        var scatterChartConfig = {
+            type: 'scatter',
+            data: formatDataForChart({{ scatter_chart_data | tojson | safe }}),
+            options: {
+                scales: {
+                    x: {
+                        type: 'category',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Passenger Count'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: 'black'
+                        }
+                    }
+                }
+            }
+        };
+
+        var scatterChartCanvas = document.getElementById('scatterChart').getContext('2d');
+        new Chart(scatterChartCanvas, scatterChartConfig);
+    </script>
+
+{% endblock %}
+
+</body>
+</html>

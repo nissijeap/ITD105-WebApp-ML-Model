@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubers/ Predict</title>
+
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+<body>
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Uber Fare Prediction</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item active"><a href="{{ url_for('ubers')}}">Ubers</a></li>
+                        <li class="breadcrumb-item active">Predict</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+          <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="card card-info">
+              <div class="card-header">
+                <h3 class="card-title" style="font-weight: bold">Predict Fare</h3>
+              </div>
+
+                <div class="container">
+                    <div class="card-body">
+                        <form method="post" action="/predictUber"><br>
+                            <div class="form-group">
+                                <label for="pickup_longitude">Pickup Longitude:</label>
+                                 <input type="text" step="any" class="form-control" name="pickup_longitude" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pickup_latitude">Pickup Latitude:</label>
+                                <input type="text" step="any" class="form-control" name="pickup_latitude" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dropoff_longitude">Dropoff Longitude:</label>
+                                <input type="text" step="any" class="form-control" name="dropoff_longitude" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dropoff_latitude">Dropoff Latitude:</label>
+                                <input type="text" step="any"  class="form-control" name="dropoff_latitude" required>
+                            </div><br>
+
+                            <div class="form-group">
+                             <label for="passenger_count">Person Count:</label>
+                                <input type="range" class="form-control-range" name="passenger_count" min="1" max="8" required
+                                    oninput="updateLabelIndication(this.value, 'plotValue')">
+                                <div class="label-indication">Value: <span id="plotValue">1</span></div>
+                            </div><br>
+
+                            <div class="form-group">
+                               <label for="distance">Distance:</label>
+                                <input type="text" step="any" class="form-control" name="distance" required>
+                            </div><br>
+
+
+                           <button type="submit" class="btn btn-info btn-block" onclick="predict()" style="font-weight: bold">Predict</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+                <div class="col-md-6">
+                    <div class="col-md-14">
+                        <!-- Prediction Result -->
+                        <div class="card card-warning">
+                            <div class="card-header">
+                                <h3 class="card-title" style="color:white; font-weight: bold">Prediction Result</h3>
+                            </div>
+                            <div class="card-body" style="background-color: white">
+                                <div class="inner">
+                                    {% if prediction is defined %}
+                                        <h3 style="text-align: center; font-weight: bold; color: {% if prediction <= 25 %}green{% else %}red{% endif %}">
+                                            ${{ "{:.1f}".format(prediction) }}
+                                        </h3>
+                                        <p style="text-align: center; color: black;">
+                                            {% if prediction >= 25 %}
+                                                That's a long-ride indeed. You may want to withdraw first.
+                                            {% else %}
+                                                Fare amount is ready! May your budget as well.
+                                            {% endif %}
+                                        </p>
+                                    {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title" style="font-weight: bold">Predicted Fare</h3>
+                    </div>
+
+                         {% if user_input %}
+                        <div class="card-body">
+                            <table class="table">
+                                <thead style="color: #FFC107">
+                                    <tr>
+                                        <th>Attributes</th>
+                                        <th>Input Values</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, value in user_input.items() %}
+                                    <tr>
+                                        <td>{{ key }}</td>
+                                        <td>{{ value }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <!-- Display user's input for prediction fare -->
+                                    <tr>
+                                        <td>Predicted Fare Amount</td>
+                                        <td>${{ "{:.1f}".format(prediction) }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br>
+
+                            {% if prediction %}
+                                <button onclick="saveToDb('{{ prediction }}')" class="btn btn-success btn-block" style="font-weight: bold">Store to Database</button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                </div>
+
+          </div>
+        </div>
+      </div>
+</section>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script>
+        function updateLabelIndication(value, spanId) {
+            document.getElementById(spanId).textContent = value;
+        }
+
+        function predict() {
+        // Show "Predicting..." alert
+        Swal.fire({
+            title: 'Predicting...',
+            text: 'Please wait for the prediction result.',
+            icon: 'info',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+        });
+
+        // Assuming you have a form with ID 'predictForm'
+        document.getElementById('predictForm').submit();
+    }
+
+   function saveToDb(prediction) {
+        // Assuming you have jQuery loaded
+        $.ajax({
+            type: 'POST',
+            url: '/uber_save_to_db',
+            data: { user_input: JSON.stringify({{ user_input|tojson }}), fare_amount: prediction },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved to Database',
+                    text: 'User input saved to the database!',
+                });
+            },
+            error: function (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error saving user input to the database.',
+                });
+            }
+        });
+    }
+    </script>
+
+
+{% endblock %}
+
+</body>
+
+</html>

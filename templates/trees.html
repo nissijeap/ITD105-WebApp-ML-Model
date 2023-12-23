@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trees / Explore</title>
+    
+     <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fontawesome-free/css/all.min.css') }}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/adminlte.min.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+{% extends 'datatable.html' %}
+
+{% block body %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Trees Data Exploration</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item active"><a href="{{ url_for('trees')}}">Trees</a></li>
+                        <li class="breadcrumb-item active">Explore</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+ 
+    <!-- Main content -->
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+
+                        <div class="row mb-2">
+                            <div class="col-md-6">
+                                <button type="button" id="addTree" class="btn btn-success" title="Add Tree Prediction">
+                                    <span class="glyphicon glyphicon-plus">Add Tree Data</span>
+                                </button>
+                            </div>
+                            <div class="col-md-6 text-right">
+                                <a href="{{ url_for('predict_trees') }}" class="btn btn-info" title="Predict Tree">Predict Tree Survival</a>
+                            </div>
+                        </div>
+                        <br>
+                        <table class="table table-striped table-hover" id="advancedDataTable">
+                        <thead style="background-color: #17A2B8;">
+                            <tr>
+                                <th style="width: 20px">Tree No</th>
+<!--                                <th>Plot</th>-->
+<!--                                <th>Subplot</th>-->
+                                <th style="width: 30px">Species</th>
+                                <th style="width: 20px">Light ISF</th>
+                                <th style="width: 20px">Light Cat</th>
+                                <th style="width: 20px">Core</th>
+                                <th style="width: 30px">Soil</th>
+<!--                                <th>Adult</th>-->
+                                <th style="width: 70px">Sterile</th>
+                                <th style="width: 20px">Conspecific</th>
+<!--                                <th>Myco</th>-->
+<!--                                <th>SoilMyco</th>-->
+                                <th style="width: 20px">PlantDate</th>
+<!--                                <th>AMF</th>-->
+<!--                                <th>EMF</th>-->
+<!--                                <th>Phenolics</th>-->
+<!--                                <th>Lignin</th>-->
+<!--                                <th>NSC</th>-->
+<!--                                <th>Census</th>-->
+                                <th style="width: 20px">Time</th>
+                                <th style="width: 20px">Harvest</th>
+                                <th style="width: 20px">Alive</th>
+                                <th style="width: 20px">Event</th>
+                                <th >Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tree in trees %}
+                            <tr>
+                                <td>{{tree.No}}</td>
+<!--                                <td>{{tree.Plot}}</td>-->
+<!--                                <td>{{tree.Subplot}}</td>-->
+                                <td>{{tree.Species}}</td>
+                                <td>{{tree.Light_ISF}}</td>
+                                <td>{{tree.Light_Cat}}</td>
+                                <td>{{tree.Core}}</td>
+                                <td>{{tree.Soil}}</td>
+<!--                                <td>{{tree.Adult}}</td>-->
+                                <td>{{tree.Sterile}}</td>
+                                <td>{{tree.Conspecific}}</td>
+<!--                                <td>{{tree.Myco}}</td>-->
+<!--                                <td>{{tree.SoilMyco}}</td>-->
+                                <td>{{tree.PlantDate}}</td>
+<!--                                <td>{{tree.AMF}}</td>-->
+<!--                                <td>{{tree.EMF}}</td>-->
+<!--                                <td>{{tree.Phenolics}}</td>-->
+<!--                                <td>{{tree.Lignin}}</td>-->
+<!--                                <td>{{tree.NSC}}</td>-->
+<!--                                <td>{{tree.Census}}</td>-->
+                                <td>{{tree.Time}}</td>
+                                <td>{% if tree.Harvest == 1 %}
+                                        Yes
+                                    {% else %}
+                                        No
+                                    {% endif %}
+                                </td>
+                                <td>{% if tree.Alive == 1 %}
+                                        Yes
+                                    {% else %}
+                                        No
+                                    {% endif %}</td>
+                                <td style="color: {% if tree.Event == 0 %}#5cb85c{% else %}#d9534f{% endif %}">
+                                    {% if tree.Event == 0 %}
+                                        SURVIVE
+                                    {% else %}
+                                        DEAD
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{url_for('edit_tree', treeid=tree.id)}}" class="btn btn-warning" style="color:white">Edit</a>
+                                    <a href="{{url_for('delete_tree', treeid=tree.id)}}" class="btn btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                                <!-- /.content -->
+                                <div class="modal fade" id="treeModal">
+                                    <div class="modal-dialog">
+                                        <form method="post" id="treeForm" action="{{ url_for('save_tree')}}" enctype="multipart/form-data">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                            <h4 class="modal-title">Add New Tree</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <div class="form-group">
+                                                    <label for="No">Tree No:</label>
+                                                    <input type="number" class="form-control" name="No" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Plot">Plot:</label>
+                                                    <input type="range" class="form-control-range" name="Plot" min="1" max="18" required
+                                                        oninput="updateLabelIndication(this.value, 'plotValue')">
+                                                    <div class="label-indication">Value: <span id="plotValue">1</span></div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Subplot">Subplot:</label>
+                                                    <input type="range" class="form-control-range" name="Subplot" min="1" max="5" required
+                                                        oninput="updateLabelIndicationSubplot(this.value, 'subplotValue')">
+                                                    <div class="label-indication">Value: <span id="subplotValue">A</span></div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Species">Species:</label>
+                                                    <select class="form-control" name="Species" required>
+                                                        <option value="" disabled selected>Select Species</option>
+                                                        <option value="Acer saccharum">Acer Saccharum</option>
+                                                        <option value="Prunus serotina">Prunus Serotina</option>
+                                                        <option value="Quercus alba">Quercus Alba</option>
+                                                        <option value="Quercus rubra">Quercus Rubra</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Light_ISF">Light ISF:</label>
+                                                    <input type="number" step="any" class="form-control" name="Light_ISF" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Light_Cat">Light Cat:</label>
+                                                     <select class="form-control" name="Light_Cat" required>
+                                                        <option value="" disabled selected>Select Light Cat</option>
+                                                        <option value="Low">Low</option>
+                                                        <option value="Med">Med</option>
+                                                        <option value="High">High</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Core">Core:</label>
+                                                    <input type="number" class="form-control" name="Core" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Soil">Soil:</label>
+                                                    <select class="form-control" name="Soil" required>
+                                                        <option value="" disabled selected>Select Soil</option>
+                                                        <option value="Acer rubrum">Acer Rubrum</option>
+                                                        <option value="Acer saccharum">Acer Saccharum</option>
+                                                        <option value="Prunus serotina">Prunus Serotina</option>
+                                                        <option value="Populus grandidentata">Prunus Grandidentata</option>
+                                                        <option value="Quercus alba">Quercus Alba</option>
+                                                        <option value="Quercus rubra">Quercus Rubra</option>
+                                                        <option value="Sterile">Sterile</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Adult">Adult:</label>
+                                                    <input type="number" class="form-control" name="Adult" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Sterile">Sterile:</label>
+                                                    <select class="form-control" name="Sterile" required>
+                                                        <option value="" disabled selected>Select Sterile</option>
+                                                        <option value="Sterile">Sterile</option>
+                                                        <option value="Non-Sterile">Non-Sterile</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Conspecific">Conspecific:</label>
+                                                    <select class="form-control" name="Conspecific" required>
+                                                        <option value="" disabled selected>Select Conspecific</option>
+                                                        <option value="Heterospecific">Heterospecific</option>
+                                                        <option value="Conspecific">Conspecific</option>
+                                                        <option value="Sterilized">Sterilized</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Myco">Myco:</label>
+                                                    <select class="form-control" name="Myco" required>
+                                                        <option value="" disabled selected>Select Myco</option>
+                                                        <option value="AMF">AMF</option>
+                                                        <option value="EMF">EMF</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="SoilMyco">Soil Myco:</label>
+                                                    <select class="form-control" name="SoilMyco" required>
+                                                        <option value="" disabled selected>Select Soil Myco</option>
+                                                        <option value="AMF">AMF</option>
+                                                        <option value="EMF">EMF</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="PlantDate">PlantDate:</label>
+                                                    <input type="date" class="form-control" name="PlantDate" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="AMF">AMF %:</label>
+                                                    <input type="text" step="any" class="form-control" name="AMF" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="EMF">EMF %:</label>
+                                                    <input type="text" step="any" class="form-control" name="EMF" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Phenolics">Phenolics:</label>
+                                                    <input type="text" step="any" class="form-control" name="Phenolics" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Lignin">Lignin:</label>
+                                                    <input type="number" step="any" class="form-control" name="Lignin" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="NSC">NSC:</label>
+                                                    <input type="number" step="any" class="form-control" name="NSC" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Census">Census:</label>
+                                                    <input type="number" class="form-control" name="Census" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Time">Time:</label>
+                                                    <input type="number" step="any" class="form-control" name="Time" required>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Harvest">Harvested:</label>
+                                                    <select class="form-control" name="Harvest" required>
+                                                        <option value="" disabled selected>Is the tree harvested?</option>
+                                                        <option value="1">Yes</option>
+                                                        <option value="0">No</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Alive">Alive:</label>
+                                                    <select class="form-control" name="Alive" required>
+                                                        <option value="" disabled selected>Is the tree alive?</option>
+                                                        <option value="1">Yes</option>
+                                                        <option value="0">No</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label for="Event">Predicted Event</label>
+                                                    <select class="form-control" name="Event" required>
+                                                        <option value="" disabled selected>Will the tree survive or be dead?</option>
+                                                        <option value="0">Survive</option>
+                                                        <option value="1">Dead</option>
+                                                    </select>
+                                                </div>
+
+                                                </div>
+                                                <div class="modal-footer justify-content-between">
+                                                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                                                <input type="hidden" name="action" id="action" value="" />
+                                                <input type="submit" name="save" id="save" class="btn btn-success" value="Save changes" />
+                                                </div>
+                                            </div>
+                                            </form>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable with horizontal scrolling
+        $('#advancedDataTable').DataTable({
+            "scrollX": true,
+            "scrollY": true,
+        });
+
+        // Show the "Add Tree" modal when the button is clicked
+        $('#addTree').click(function() {
+            $('#treeModal').modal('show');
+        });
+
+        // Handle form submission with SweetAlert
+        $('#treeForm').submit(function(event) {
+            event.preventDefault();
+
+            // Perform form submission using AJAX or other method
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: $(this).serialize(),
+                success: function(response) {
+                    // Close the modal
+                    $('#treeModal').modal('hide');
+
+                    // Show SweetAlert success message
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Tree data saved successfully.',
+                        icon: 'success',
+                        confirmButtonColor: '#3085d6',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        // You can perform additional actions here if needed
+                    });
+                },
+                error: function(error) {
+                    // Handle error if the form submission fails
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script>
+
+
+<script>
+        function updateLabelIndication(value, spanId) {
+            document.getElementById(spanId).textContent = value;
+        }
+
+        function updateLabelIndicationSubplot(value, spanId) {
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            document.getElementById(spanId).textContent = letters[value - 1];
+        }
+</script>
+
+{% endblock %}

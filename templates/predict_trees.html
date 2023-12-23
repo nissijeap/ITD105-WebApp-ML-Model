@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trees/ Predict</title>
+
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+<body>
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Tree Survival Prediction</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item active"><a href="{{ url_for('trees')}}">Trees</a></li>
+                        <li class="breadcrumb-item active">Predict</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+<section class="content">
+      <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+          <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="card card-info">
+              <div class="card-header">
+                <h3 class="card-title" style="font-weight: bold">Predict Event</h3>
+              </div>
+
+                <div class="container">
+                    <div class="card-body">
+                        <form method="post" action="/predictTree">
+                            <div class="form-group">
+                                <label for="No">Tree No:</label>
+                                <input type="number" class="form-control" name="No" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Plot">Plot:</label>
+                                <input type="range" class="form-control-range" name="Plot" min="1" max="18" required
+                                    oninput="updateLabelIndication(this.value, 'plotValue')">
+                                <div class="label-indication">Value: <span id="plotValue">1</span></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Subplot">Subplot:</label>
+                                <input type="range" class="form-control-range" name="Subplot" min="1" max="5" required
+                                    oninput="updateLabelIndicationSubplot(this.value, 'subplotValue')">
+                                <div class="label-indication">Value: <span id="subplotValue">A</span></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Species">Species:</label>
+                                <select class="form-control" name="Species" required>
+                                    <option value="" disabled selected>Select Species</option>
+                                    <option value="Acer saccharum">Acer Saccharum</option>
+                                    <option value="Prunus serotina">Prunus Serotina</option>
+                                    <option value="Quercus alba">Quercus Alba</option>
+                                    <option value="Quercus rubra">Quercus Rubra</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Light_ISF">Light ISF:</label>
+                                <input type="number" step="any" class="form-control" name="Light_ISF" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Light_Cat">Light Cat:</label>
+                                 <select class="form-control" name="Light_Cat" required>
+                                    <option value="" disabled selected>Select Light Cat</option>
+                                    <option value="Low">Low</option>
+                                    <option value="Med">Med</option>
+                                    <option value="High">High</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Core">Core:</label>
+                                <input type="number" class="form-control" name="Core" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Soil">Soil:</label>
+                                <select class="form-control" name="Soil" required>
+                                    <option value="" disabled selected>Select Soil</option>
+                                    <option value="Acer rubrum">Acer Rubrum</option>
+                                    <option value="Acer saccharum">Acer Saccharum</option>
+                                    <option value="Prunus serotina">Prunus Serotina</option>
+                                    <option value="Populus grandidentata">Prunus Grandidentata</option>
+                                    <option value="Quercus alba">Quercus Alba</option>
+                                    <option value="Quercus rubra">Quercus Rubra</option>
+                                    <option value="Sterile">Sterile</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Adult">Adult:</label>
+                                <input type="number" class="form-control" name="Adult" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Sterile">Sterile:</label>
+                                <select class="form-control" name="Sterile" required>
+                                    <option value="" disabled selected>Select Sterile</option>
+                                    <option value="Sterile">Sterile</option>
+                                    <option value="Non-Sterile">Non-Sterile</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Conspecific">Conspecific:</label>
+                                <select class="form-control" name="Conspecific" required>
+                                    <option value="" disabled selected>Select Conspecific</option>
+                                    <option value="Heterospecific">Heterospecific</option>
+                                    <option value="Conspecific">Conspecific</option>
+                                    <option value="Sterilized">Sterilized</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Myco">Myco:</label>
+                                <select class="form-control" name="Myco" required>
+                                    <option value="" disabled selected>Select Myco</option>
+                                    <option value="AMF">AMF</option>
+                                    <option value="EMF">EMF</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="SoilMyco">Soil Myco:</label>
+                                <select class="form-control" name="SoilMyco" required>
+                                    <option value="" disabled selected>Select Soil Myco</option>
+                                    <option value="AMF">AMF</option>
+                                    <option value="EMF">EMF</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="PlantDate">PlantDate:</label>
+                                <input type="date" class="form-control" name="PlantDate" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="AMF">AMF %:</label>
+                                <input type="text" step="any" class="form-control" name="AMF" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="EMF">EMF %:</label>
+                                <input type="text" step="any" class="form-control" name="EMF" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Phenolics">Phenolics:</label>
+                                <input type="text" step="any" class="form-control" name="Phenolics" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Lignin">Lignin:</label>
+                                <input type="number" step="any" class="form-control" name="Lignin" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="NSC">NSC:</label>
+                                <input type="number" step="any" class="form-control" name="NSC" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Census">Census:</label>
+                                <input type="number" class="form-control" name="Census" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Time">Time:</label>
+                                <input type="number" step="any" class="form-control" name="Time" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Harvest">Harvested?</label>
+                                <select class="form-control" name="Harvest" required>
+                                    <option value="" disabled selected>Is the tree harvested?</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Alive">Alive?</label>
+                                <select class="form-control" name="Alive" required>
+                                    <option value="" disabled selected>Is the tree alive?</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div><br>
+
+                           <button type="submit" class="btn btn-info btn-block" onclick="predict()" style="font-weight: bold">Predict</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+                <div class="col-md-6">
+                    <div class="col-md-14">
+                    <!-- Prediction Result -->
+                        <div class="card card-warning">
+                          <div class="card-header">
+                            <h3 class="card-title" style="color:white; font-weight: bold">Prediction Result</h3>
+                          </div>
+                            <div class="card-body" style="background-color: white">
+                            <div class="inner">
+                                <h3 style="text-align: center; font-weight: bold; color: {% if result == 'SURVIVE' %}green{% elif result == 'DEAD' %}red{% endif %}">
+                                  {{ result }}
+                                </h3>
+                                {% if result == 'SURVIVE' %}
+                                    <p style="text-align: center; color: green;">Keep the healthy environment up! The tree is predicted to survive.</p>
+                                {% elif result == 'DEAD' %}
+                                    <p style="text-align: center; color: red;">Oh no! Unfortunately, the tree is predicted to not survive.</p>
+                                {% endif %}
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-success">
+                    <div class="card-header">
+                        <h3 class="card-title" style="font-weight: bold">Predicted Event</h3>
+                    </div>
+
+                    {% if user_input %}
+                        <div class="card-body">
+                            <table class="table">
+                                <thead style="color: #FFC107">
+                                    <tr>
+                                        <th>Attributes</th>
+                                        <th>Input Values</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for key, value in user_input.items() %}
+                                        <tr>
+                                            <td>{{ key }}</td>
+                                            <td>{{ value }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <!-- Include the Result Row -->
+                                    <tr>
+                                        <td>Predicted Event</td>
+                                        <td>{{ 0 if result == 'SURVIVE' else 1 }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br>
+
+                            {% if result %}
+                                <button onclick="saveToDb('{{ result }}')" class="btn btn-success btn-block" style="font-weight: bold">Store to Database</button>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+          </div>
+        </div>
+      </div>
+</section>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script>
+    function updateLabelIndication(value, spanId) {
+        document.getElementById(spanId).textContent = value;
+    }
+
+    function updateLabelIndicationSubplot(value, spanId) {
+        const letters = ['A', 'B', 'C', 'D', 'E'];
+        document.getElementById(spanId).textContent = letters[value - 1];
+    }
+
+    function predict() {
+        // Show "Predicting..." alert
+        Swal.fire({
+            title: 'Predicting...',
+            text: 'Please wait for the prediction result.',
+            icon: 'info',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+        });
+
+        // Assuming you have a form with ID 'predictForm'
+        document.getElementById('predictForm').submit();
+    }
+
+    function saveToDb(result) {
+        // Assuming you have jQuery loaded
+        $.ajax({
+            type: 'POST',
+            url: '/tree_save_to_db',
+            data: { user_input: JSON.stringify({{ user_input|tojson }}), Event: (result === 'SURVIVE' ? 0 : 1) },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Saved to Database',
+                    text: 'User input saved to the database!',
+                });
+            },
+            error: function (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Error saving user input to the database.',
+                });
+            }
+        });
+    }
+</script>
+
+{% endblock %}

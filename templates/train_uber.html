@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ubers/ Train</title>
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
+<body>
+{% extends 'layout.html' %}
+
+{% block body %}
+    <h1>Train Tree Model</h1>
+    <form action="/trainUber" method="post" enctype="multipart/form-data">
+        <label for="file">Upload CSV file:</label>
+        <input type="file" name="file" accept=".csv" required>
+        <br>
+        <button type="submit" id="trainButton">Train Model</button>
+    </form>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<script>
+    function trainModel() {
+        // Submit the form
+        document.getElementById('trainForm').submit();
+
+        // Show SweetAlert while waiting for the response
+        Swal.fire({
+            title: 'Training Model...',
+            icon: 'info',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+        });
+    }
+
+    // Handle the response from the server
+    function handleResponse(response) {
+        response = JSON.parse(response); // Parse the JSON response
+        if (response.status === 'success') {
+            // Show success SweetAlert
+            Swal.fire({
+                title: 'Model trained successfully!',
+                text: response.message,
+                icon: 'success',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                confirmButtonText: 'OK',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
+            });
+        } else {
+            // Show error SweetAlert
+            Swal.fire({
+                title: 'Error',
+                text: response.message,
+                icon: 'error',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                confirmButtonText: 'OK',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
+            });
+        }
+    }
+</script>
+
+
+{% endblock %}
+</body>
+</html>

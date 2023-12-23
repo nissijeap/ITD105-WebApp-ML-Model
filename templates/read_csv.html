@@ -1,0 +1,372 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Dataset</title>
+
+     <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fontawesome-free/css/all.min.css') }}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/adminlte.min.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+{% extends 'datatable.html' %}
+
+{% block body %}
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Import Dataset</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard')}}">Home</a></li>
+                        <li class="breadcrumb-item active"><a href="{{ url_for('read_csv')}}">Read CSV</a></li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<!-- Main content -->
+<section class="content">
+<div class="container-fluid">
+         <div class="row">
+            <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Container for file input and buttons with dark blue transparent background -->
+                            <div class="file-container">
+                                <h5 class="card-title" style="font-size: 20px; font-weight: bold">Upload CSV/Excel File</h5><br><br>
+
+                                <div class="form-group">
+                                    <input type="file" class="form-control" id="file" name="file"
+                                        accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <button type="button" class="btn btn-warning" id="readCsvBtn">Read CSV</button>
+                                </div><br>
+
+                                <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+             </div><br>
+
+             <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                        <table class="table table-hover" id="readTable">
+                            <thead class="table-dark">
+                             <tr>
+                                    <!-- Your th elements here -->
+                             </tr>
+                        </thead>
+                        <tbody id="readTableBody">
+                                <!-- Your tr elements here -->
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+             <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" style="font-size: 20px; font-weight: bold">Data Visualization</h5><br><br>
+
+                            <div class="mb-3">
+                                <label for="xAxisField" class="form-label">Select X-Axis Field:</label>
+                                <select class="form-select" id="xAxisField"></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="yAxisField" class="form-label">Select Y-Axis Field:</label>
+                                <select class="form-select" id="yAxisField"></select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="chartType" class="form-label">Select Chart Type:</label>
+                                <select class="form-select" id="chartType">
+                                    <option value="bar">Bar Chart</option>
+                                    <option value="line">Line Chart</option>
+                                    <option value="pie">Pie Chart</option>
+                                    <option value="doughnut">Doughnut Chart</option>
+                                    <option value="scatter">Scatter Plot</option>
+<!--                                    <option value="stackedBar">Stacked Bar Chart</option>-->
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <canvas id="chartCanvas" width="800" height="400"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="modal" id="collectionModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Enter Collection Name</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="text" class="form-control" id="collectionNameInput"
+                                            placeholder="Enter Collection Name">
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary"
+                                            id="confirmCollectionBtn">Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        <!-- /.row-->
+
+            </div>
+        </div>
+  </div><!-- /.container-fluid -->
+</section>
+    <!-- /.content -->
+
+<!-- Bootstrap JS and Popper.js -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <script>
+        let csvData = [];
+
+        function getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function aggregateData(data, xField, yField) {
+            const aggregatedData = {};
+            data.forEach(row => {
+                const xValue = row[xField];
+                if (!aggregatedData[xValue]) {
+                    aggregatedData[xValue] = { x: xValue, y: row[yField] };
+                } else {
+                    aggregatedData[xValue].y += row[yField];
+                }
+            });
+            return Object.values(aggregatedData);
+        }
+
+        function updateChart(data, chartType, xField, yField) {
+            const chartCanvas = document.getElementById('chartCanvas');
+            const ctx = chartCanvas.getContext('2d');
+
+            if (window.myChart) {
+                window.myChart.destroy();
+            }
+
+            const labelsSet = new Set();
+            const datasets = [];
+
+            const aggregatedData = aggregateData(data, xField, yField);
+            const labels = aggregatedData.map(entry => entry.x);
+
+            if (chartType === 'dotmap' && xField === 'longitude' && yField === 'latitude') {
+                createDotMap(data);
+                return;
+            }
+
+            if (chartType === 'bar' || chartType === 'line') {
+                datasets.push({
+                    label: yField,
+                    data: aggregatedData.map(entry => entry.y),
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    borderWidth: 1
+                });
+            } else if (chartType === 'pie' || chartType === 'doughnut') {
+                const backgroundColors = aggregatedData.map(() => getRandomColor());
+                datasets.push({
+                    label: yField,
+                    data: aggregatedData.map(entry => entry.y),
+                    backgroundColor: backgroundColors
+                });
+            } else if (chartType === 'scatter') {
+                datasets.push({
+                    label: yField,
+                    data: aggregatedData.map(entry => ({ x: entry.x, y: entry.y })),
+                    backgroundColor: getRandomColor(),
+                    borderColor: getRandomColor(),
+                    borderWidth: 1,
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                });
+            } else if (chartType === 'stackedBar') {
+                const uniqueYValues = Array.from(new Set(aggregatedData.map(entry => entry.y)));
+                const stackedData = uniqueYValues.map(yValue => ({
+                    label: yValue,
+                    data: aggregatedData.filter(entry => entry.y === yValue).map(entry => entry.x),
+                    backgroundColor: getRandomColor()
+                }));
+                datasets.push(...stackedData);
+            }
+
+            const options = {
+                responsive: true,
+                maintainAspectRatio: false
+            };
+
+            window.myChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: options
+            });
+        }
+
+        function populateFieldSelection(data) {
+            const fields = Object.keys(data[0]);
+            const xAxisFieldSelect = document.getElementById('xAxisField');
+            const yAxisFieldSelect = document.getElementById('yAxisField');
+
+            xAxisFieldSelect.innerHTML = '';
+            yAxisFieldSelect.innerHTML = '';
+
+            fields.forEach(field => {
+                xAxisFieldSelect.innerHTML += `<option value="${field}">${field}</option>`;
+                yAxisFieldSelect.innerHTML += `<option value="${field}">${field}</option>`;
+            });
+        }
+
+        function updateTable(data) {
+            const readTable = $('#readTable');
+            const readTableBody = $('#readTableBody');
+
+            readTable.find('thead tr').html('');
+            readTableBody.html('');
+
+            if (data.length > 0) {
+                const fields = Object.keys(data[0]);
+
+                fields.forEach(field => {
+                    const sanitizedField = field.replace(/\s+/g, '_');
+                    readTable.find('thead tr').append(`<th>${sanitizedField}</th>`);
+                });
+
+                data.forEach(dataRow => {
+                    // Check if all column values are null or undefined
+                    const hasValues = Object.values(dataRow).some(value => value !== null && value !== undefined);
+
+                    // If at least one column has a non-null, non-undefined value, add the row to the table
+                    if (hasValues) {
+                        const row = $('<tr>');
+
+                        fields.forEach(field => {
+                            row.append(`<td>${dataRow[field]}</td>`);
+                        });
+
+                        readTableBody.append(row);
+                    }
+                });
+
+                readTable.DataTable({
+                    scrollX: true,
+                    responsive: true,
+                });
+            } else {
+                alert('The dataset is empty.');
+            }
+        }
+
+        document.getElementById('readCsvBtn').addEventListener('click', function () {
+          const fileInput = document.getElementById('file');
+          const file = fileInput.files[0];
+
+          if (file) {
+            showLoadingSpinner();
+            Papa.parse(file, {
+              header: true,
+              dynamicTyping: true,
+              complete: function (results) {
+                csvData = results.data;
+                populateFieldSelection(csvData);
+                updateTable(csvData);
+                hideLoadingSpinner();
+                showSuccessAlert("CSV Read Successfully", "CSV file has been read successfully.");
+              },
+            });
+          } else {
+            showErrorAlert("File Not Selected", "Please select a file to read CSV/Excel.");
+          }
+        });
+
+        function showSuccessAlert(title, text) {
+          Swal.fire({
+            icon: 'success',
+            title: title,
+            text: text,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+          });
+        }
+
+        function showErrorAlert(title, text) {
+          Swal.fire({
+            icon: 'error',
+            title: title,
+            text: text,
+            confirmButtonText: 'OK',
+          });
+        }
+
+        document.getElementById('chartType').addEventListener('change', updateChartBasedOnSelection);
+        document.getElementById('xAxisField').addEventListener('change', updateChartBasedOnSelection);
+        document.getElementById('yAxisField').addEventListener('change', updateChartBasedOnSelection);
+
+        function updateChartBasedOnSelection() {
+          const selectedChartType = document.getElementById('chartType').value;
+          const selectedXField = document.getElementById('xAxisField').value;
+          const selectedYField = document.getElementById('yAxisField').value;
+          updateChart(csvData, selectedChartType, selectedXField, selectedYField);
+        }
+
+        function showLoadingSpinner() {
+          $('#loadingSpinner').show();
+        }
+
+        function hideLoadingSpinner() {
+          $('#loadingSpinner').hide();
+        }
+  </script>
+
+{% endblock %}
